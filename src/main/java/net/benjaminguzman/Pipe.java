@@ -74,6 +74,13 @@ public class Pipe implements Runnable {
 			// read from input stream and write to output stream
 			String line;
 			while ((line = reader.readLine()) != null) {
+				if (hasPrefix) writer.write(options.prefix);
+				writer.write(line);
+				if (hasSuffix) writer.write(options.suffix);
+				writer.newLine();
+
+				if (options.autoFlush) writer.flush();
+
 				// check if the line contains one of the specified patterns
 				if (hasConfiguredHooks) {
 					String finalLine = line;
@@ -82,13 +89,6 @@ public class Pipe implements Runnable {
 							consumer.accept(finalLine);
 					});
 				}
-
-				if (hasPrefix) writer.write(options.prefix);
-				writer.write(line);
-				if (hasSuffix) writer.write(options.suffix);
-				writer.newLine();
-
-				if (options.autoFlush) writer.flush();
 			}
 
 			// write footer
