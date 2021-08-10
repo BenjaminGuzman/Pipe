@@ -260,7 +260,7 @@ public class Pipe implements Runnable {
 		 *              (for every input line it will be checked if it contains the given pattern, and it has
 		 *              complexity O(nm) or worse)
 		 */
-		public Builder setHooks(Map<Pattern, Consumer<String>> hooks) {
+		public Builder setHooks(@Nullable Map<Pattern, Consumer<String>> hooks) {
 			this.hooks = hooks;
 			return this;
 		}
