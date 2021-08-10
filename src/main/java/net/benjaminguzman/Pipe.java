@@ -2,7 +2,7 @@
  * MIT License
  *
  * Copyright (c) 2021. Benjamín Antonio Velasco Guzmán
- * Author: Benjamín Antonio Velasco Guzmán <***REMOVED***>
+ * Author: Benjamín Antonio Velasco Guzmán <bg@benjaminguzman.dev>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,12 +45,14 @@ public class Pipe implements Runnable {
 
 	/**
 	 * Run inside a separate thread
-	 *
+	 * <p>
 	 * This will read from the configured input stream and write to the given output stream
-	 *
+	 * <p>
 	 * All of that will be done using configurations set in {@link Builder}
-	 *
+	 * <p>
 	 * Read and write are both done in the same thread
+	 * <p>
+	 * Execution terminates when there is no more data in input stream or an exception occurs
 	 *
 	 * @see #initThread()
 	 */
@@ -111,15 +113,14 @@ public class Pipe implements Runnable {
 	/**
 	 * Initializes a new {@link Thread} that will run {@link #run()} method on start
 	 * ({@link Thread#start()}) is not being called here)
-	 *
+	 * <p>
 	 * The created thread is daemon and its name is "Pipe-Thread"
-	 *
+	 * <p>
 	 * For maximum performance, don't use this method, but instead use an {@link java.util.concurrent.Executor}
-	 * (thread creation can be an expensive operation)
 	 *
+	 * @return the created thread
 	 * @see #initThread(String)
 	 * @see java.util.concurrent.Executor
-	 * @return the created thread
 	 */
 	public Thread initThread() {
 		return initThread("Pipe-Thread");
@@ -128,11 +129,11 @@ public class Pipe implements Runnable {
 	/**
 	 * Initializes a new {@link Thread} that will run {@link #run()} method on start
 	 * ({@link Thread#start()}) is not being called here)
-	 *
+	 * <p>
 	 * The created thread is daemon
-	 *
+	 * <p>
 	 * For maximum performance, don't use this method, but instead use an {@link java.util.concurrent.Executor}
-	 * (thread creation can be an expensive operation)
+	 *
 	 * @param threadName thread name
 	 * @return the created thread
 	 */
@@ -179,6 +180,7 @@ public class Pipe implements Runnable {
 
 		/**
 		 * Creates a builder object with {@link StandardCharsets#UTF_8} input and output charset
+		 *
 		 * @param inStream  Data will be read from this stream
 		 * @param outStream Read data will be written in this stream
 		 */
@@ -202,67 +204,6 @@ public class Pipe implements Runnable {
 			this.outStream = outStream;
 			this.inCharset = inCharset;
 			this.outCharset = outCharset;
-		}
-
-		/**
-		 * @param header string to be added to the beginning of the output. If null, nothing is added.
-		 *               It is recommended that this string ends with '\n'
-		 */
-		public Builder setHeader(@Nullable String header) {
-			this.header = header;
-			return this;
-		}
-
-		/**
-		 * @param footer string to be added to the end of the output (once the input stream is closed).
-		 *               If null, nothing is added.
-		 *               It is recommended that this string ends with '\n'
-		 */
-		public Builder setFooter(@Nullable String footer) {
-			this.footer = footer;
-			return this;
-		}
-
-		/**
-		 * @param prefix prefix to be added to each line of the output.
-		 *               It is recommended that this string ends with ' ' (space)
-		 */
-		public Builder setPrefix(@Nullable String prefix) {
-			this.prefix = prefix;
-			return this;
-		}
-
-		/**
-		 * @param suffix suffix to be added to each line of the output.
-		 *               It is recommended that this string starts with ' ' (space)
-		 */
-		public Builder setSuffix(@Nullable String suffix) {
-			this.suffix = suffix;
-			return this;
-		}
-
-		/**
-		 * @param onException Callback to execute when an error occurs while reading from the input stream
-		 *                or writing to the output stream
-		 */
-		public Builder setOnException(@Nullable Consumer<? super Exception> onException) {
-			this.onException = onException;
-			return this;
-		}
-
-		/**
-		 * @param hooks map of patterns and consumers. When a pattern (key) is found within any line of text
-		 *              from the input stream, the consumer (value) is called ({@link Consumer#accept(Object)})
-		 *              with the argument being the full line of text that triggered its execution.
-		 *              <p>
-		 *              To prevent performance issues, it is recommended patterns to be very simple.
-		 *              It is also recommended not to add too many patterns
-		 *              (for every input line it will be checked if it contains the given pattern, and it has
-		 *              complexity O(nm) or worse)
-		 */
-		public Builder setHooks(@Nullable Map<Pattern, Consumer<String>> hooks) {
-			this.hooks = hooks;
-			return this;
 		}
 
 		/**
@@ -309,9 +250,28 @@ public class Pipe implements Runnable {
 			return header;
 		}
 
+		/**
+		 * @param header string to be added to the beginning of the output. If null, nothing is added.
+		 *               It is recommended that this string ends with '\n'
+		 */
+		public Builder setHeader(@Nullable String header) {
+			this.header = header;
+			return this;
+		}
+
 		@Nullable
 		public String getFooter() {
 			return footer;
+		}
+
+		/**
+		 * @param footer string to be added to the end of the output (once the input stream is closed).
+		 *               If null, nothing is added.
+		 *               It is recommended that this string ends with '\n'
+		 */
+		public Builder setFooter(@Nullable String footer) {
+			this.footer = footer;
+			return this;
 		}
 
 		@Nullable
@@ -319,9 +279,27 @@ public class Pipe implements Runnable {
 			return prefix;
 		}
 
+		/**
+		 * @param prefix prefix to be added to each line of the output.
+		 *               It is recommended that this string ends with ' ' (space)
+		 */
+		public Builder setPrefix(@Nullable String prefix) {
+			this.prefix = prefix;
+			return this;
+		}
+
 		@Nullable
 		public String getSuffix() {
 			return suffix;
+		}
+
+		/**
+		 * @param suffix suffix to be added to each line of the output.
+		 *               It is recommended that this string starts with ' ' (space)
+		 */
+		public Builder setSuffix(@Nullable String suffix) {
+			this.suffix = suffix;
+			return this;
 		}
 
 		@Nullable
@@ -329,9 +307,33 @@ public class Pipe implements Runnable {
 			return onException;
 		}
 
+		/**
+		 * @param onException Callback to execute when an error occurs while reading from the input stream
+		 *                    or writing to the output stream
+		 */
+		public Builder setOnException(@Nullable Consumer<? super Exception> onException) {
+			this.onException = onException;
+			return this;
+		}
+
 		@Nullable
 		public Map<Pattern, Consumer<String>> getHooks() {
 			return hooks;
+		}
+
+		/**
+		 * @param hooks map of patterns and consumers. When a pattern (key) is found within any line of text
+		 *              from the input stream, the consumer (value) is called ({@link Consumer#accept(Object)})
+		 *              with the argument being the full line of text that triggered its execution.
+		 *              <p>
+		 *              To prevent performance issues, it is recommended patterns to be very simple.
+		 *              It is also recommended not to add too many patterns
+		 *              (for every input line it will be checked if it contains the given pattern, and it has
+		 *              complexity O(nm) or worse)
+		 */
+		public Builder setHooks(@Nullable Map<Pattern, Consumer<String>> hooks) {
+			this.hooks = hooks;
+			return this;
 		}
 
 		public boolean shouldCloseOutStream() {

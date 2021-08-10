@@ -21,7 +21,7 @@ Add the maven dependency
 <dependency>
     <groupId>net.benjaminguzman</groupId>
     <artifactId>Pipe</artifactId>
-    <version>1.0</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 

@@ -6,7 +6,7 @@
 
     <groupId>net.benjaminguzman</groupId>
     <artifactId>Pipe</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -27,7 +27,7 @@
     <developers>
         <developer>
             <name>Benjamín Guzmán</name>
-            <email>***REMOVED***</email>
+            <email>bg@benjaminguzman.dev</email>
             <organization>Benjamín Guzmán</organization>
             <organizationUrl>https://benjaminguzman.net</organizationUrl>
         </developer>
